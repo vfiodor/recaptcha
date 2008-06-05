@@ -5,14 +5,12 @@ module Ambethia
     RECAPTCHA_API_SECURE_SERVER = 'https://api-secure.recaptcha.net';
     RECAPTCHA_VERIFY_SERVER     = 'api-verify.recaptcha.net';
 
-    SKIP_VERIFY_ENV = ['test']
-
     module Helper 
       # Your public API can be specified in the +options+ hash or preferably the environment
       # variable +RECAPTCHA_PUBLIC_KEY+.
       def recaptcha_tags(options = {})
         # Default options
-        key   = options[:public_key] ||= ENV['RECAPTCHA_PUBLIC_KEY']
+        key   = options[:public_key] ||= RECAPTCHA_PUBLIC_KEY
         error = options[:error] ||= session[:recaptcha_error]
         uri   = options[:ssl] ? RECAPTCHA_API_SECURE_SERVER : RECAPTCHA_API_SERVER
         xhtml = Builder::XmlMarkup.new :target => out=(''), :indent => 2 # Because I can.
@@ -39,11 +37,10 @@ module Ambethia
     module Controller
       # Your private API key must be specified in the environment variable +RECAPTCHA_PRIVATE_KEY+
       def verify_recaptcha(model = nil)
-        return true if SKIP_VERIFY_ENV.include? ENV['RAILS_ENV']
-        raise ReCaptchaError, "No private key specified." unless ENV['RECAPTCHA_PRIVATE_KEY']
+        raise ReCaptchaError, "No private key specified." unless RECAPTCHA_PRIVATE_KEY
         begin
           recaptcha = Net::HTTP.post_form URI.parse("http://#{RECAPTCHA_VERIFY_SERVER}/verify"), {
-            :privatekey => ENV['RECAPTCHA_PRIVATE_KEY'],
+            :privatekey => RECAPTCHA_PRIVATE_KEY,
             :remoteip   => request.remote_ip,
             :challenge  => params[:recaptcha_challenge_field],
             :response   => params[:recaptcha_response_field]
@@ -68,3 +65,8 @@ module Ambethia
     
   end # ReCaptcha
 end # Ambethia
+
+class Merb::Controller
+  include Ambethia::ReCaptcha::Helper
+  include Ambethia::ReCaptcha::Controller
+end
