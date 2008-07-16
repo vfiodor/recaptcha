@@ -7,7 +7,7 @@ require 'merb-core/tasks/merb_rake_helper'
 require "spec/rake/spectask"
 
 NAME = "merb_recaptcha"
-GEM_VERSION = "0.0.1"
+GEM_VERSION = "0.0.2"
 AUTHOR = "Your Name"
 EMAIL = "Your Email"
 HOMEPAGE = "http://merbivore.com/"
