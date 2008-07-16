@@ -65,8 +65,3 @@ module Ambethia
     
   end # ReCaptcha
 end # Ambethia
-
-class Merb::Controller
-  include Ambethia::ReCaptcha::Helper
-  include Ambethia::ReCaptcha::Controller
-end

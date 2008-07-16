@@ -4,6 +4,7 @@ require 'rubygems/specification'
 require 'date'
 require 'merb-core/version'
 require 'merb-core/tasks/merb_rake_helper'
+require "spec/rake/spectask"
 
 NAME = "merb_recaptcha"
 GEM_VERSION = "0.0.1"
@@ -53,4 +54,9 @@ namespace :jruby do
     sh %{#{sudo} jruby -S gem install #{install_home} pkg/#{NAME}-#{GEM_VERSION}.gem --no-rdoc --no-ri}
   end
 
+end
+
+Spec::Rake::SpecTask.new do |t|
+   t.spec_opts = ["--format", "specdoc", "--colour"]
+   t.spec_files = Dir['spec/**/*_spec.rb'].sort
 end
