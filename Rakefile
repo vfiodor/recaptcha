@@ -7,11 +7,11 @@ require 'merb-core/tasks/merb_rake_helper'
 require "spec/rake/spectask"
 
 NAME = "merb_recaptcha"
-GEM_VERSION = "0.0.2"
-AUTHOR = "Your Name"
-EMAIL = "Your Email"
-HOMEPAGE = "http://merbivore.com/"
-SUMMARY = "Merb plugin that provides ..."
+GEM_VERSION = "0.0.3"
+AUTHOR = "Fiodor Veresciaka"
+EMAIL = "fiodor.veresciaka@gmail.com"
+HOMEPAGE = "http://www.rubyonrails.lt/"
+SUMMARY = "ReCaptcha helper for Merb app"
 
 spec = Gem::Specification.new do |s|
   s.rubyforge_project = 'merb'

@@ -61,7 +61,7 @@ module Ambethia
     
     module Controller
       # Your private API key must be specified in the environment variable +RECAPTCHA_PRIVATE_KEY+
-      def verify_recaptcha(model = nil)
+      def verify_recaptcha(model = nil, options = {})
         raise ReCaptchaError, "No private key specified." unless Ambethia::ReCaptcha.private_key
         begin
           recaptcha = Net::HTTP.post_form URI.parse("http://#{Ambethia::ReCaptcha.recaptcha_verify_server}/verify"), {
@@ -70,11 +70,11 @@ module Ambethia
             :challenge  => params[:recaptcha_challenge_field],
             :response   => params[:recaptcha_response_field]
           }
-          answer, error = recaptcha.body.split.map(&:chomp)
+          answer, error = recaptcha.body.split.map {|i| i.chomp}
           unless answer == 'true'
             session[:recaptcha_error] = error
             model.valid? if model
-            model.errors.add_to_base "Captcha response is incorrect, please try again." if model
+            model.errors.add_to_base(options[:failure_message] || "Captcha response is incorrect, please try again.") if model
             return false
           else
             session[:recaptcha_error] = nil
