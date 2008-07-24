@@ -1,18 +1,43 @@
 # ReCAPTCHA
 module Ambethia
   module ReCaptcha
-    RECAPTCHA_API_SERVER        = 'http://api.recaptcha.net';
-    RECAPTCHA_API_SECURE_SERVER = 'https://api-secure.recaptcha.net';
-    RECAPTCHA_VERIFY_SERVER     = 'api-verify.recaptcha.net';
+
+    def self.recaptcha_api_server
+      'http://api.recaptcha.net'
+    end
+
+    def self.recaptcha_api_secure_server
+      'https://api-secure.recaptcha.net'
+    end
+
+    def self.recaptcha_verify_server
+      'api-verify.recaptcha.net'
+    end
+
+    def self.public_key=(value)
+      @@public_key = value
+    end
+
+    def self.public_key
+      @@public_key
+    end
+
+    def self.private_key=(value)
+      @@private_key = value
+    end
+
+    def self.private_key
+      @@private_key
+    end
 
     module Helper 
       # Your public API can be specified in the +options+ hash or preferably the environment
       # variable +RECAPTCHA_PUBLIC_KEY+.
       def recaptcha_tags(options = {})
         # Default options
-        key   = options[:public_key] ||= RECAPTCHA_PUBLIC_KEY
+        key   = options[:public_key] ||= Ambethia::ReCaptcha.public_key
         error = options[:error] ||= session[:recaptcha_error]
-        uri   = options[:ssl] ? RECAPTCHA_API_SECURE_SERVER : RECAPTCHA_API_SERVER
+        uri   = options[:ssl] ? Ambethia::ReCaptcha.recaptcha_api_secure_server : Ambethia::ReCaptcha.recaptcha_api_server
         xhtml = Builder::XmlMarkup.new :target => out=(''), :indent => 2 # Because I can.
         if options[:display] 
           xhtml.script(:type => "text/javascript"){ xhtml.text! "var RecaptchaOptions = #{options[:display].to_json};\n"}
@@ -37,10 +62,10 @@ module Ambethia
     module Controller
       # Your private API key must be specified in the environment variable +RECAPTCHA_PRIVATE_KEY+
       def verify_recaptcha(model = nil)
-        raise ReCaptchaError, "No private key specified." unless RECAPTCHA_PRIVATE_KEY
+        raise ReCaptchaError, "No private key specified." unless Ambethia::ReCaptcha.private_key
         begin
-          recaptcha = Net::HTTP.post_form URI.parse("http://#{RECAPTCHA_VERIFY_SERVER}/verify"), {
-            :privatekey => RECAPTCHA_PRIVATE_KEY,
+          recaptcha = Net::HTTP.post_form URI.parse("http://#{Ambethia::ReCaptcha.recaptcha_verify_server}/verify"), {
+            :privatekey => Ambethia::ReCaptcha.private_key,
             :remoteip   => request.remote_ip,
             :challenge  => params[:recaptcha_challenge_field],
             :response   => params[:recaptcha_response_field]

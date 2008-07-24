@@ -10,8 +10,8 @@ describe "merb_recaptcha" do
   attr_accessor :session
 
   before(:each) do
-    RECAPTCHA_PUBLIC_KEY  = '0000000000000000000000000000000000000000'
-    RECAPTCHA_PRIVATE_KEY = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+    Ambethia::ReCaptcha.public_key  = '0000000000000000000000000000000000000000'
+    Ambethia::ReCaptcha.private_key = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
     @session = {}
   end
 
@@ -28,9 +28,19 @@ describe "merb_recaptcha" do
   end
 
   it "should raise exception without public key" do
-    RECAPTCHA_PUBLIC_KEY = nil
+    Ambethia::ReCaptcha.public_key = nil
     lambda {
       recaptcha_tags
+    }.should raise_error(Ambethia::ReCaptcha::ReCaptchaError)
+  end
+end
+
+describe "verify_recaptcha" do
+  include Ambethia::ReCaptcha::Controller
+
+  it "should raise exception without private key" do
+    lambda {
+      verify_recaptcha
     }.should raise_error(Ambethia::ReCaptcha::ReCaptchaError)
   end
 end
