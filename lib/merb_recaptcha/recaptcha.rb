@@ -1,6 +1,8 @@
 # ReCAPTCHA
 module Ambethia
   module ReCaptcha
+    @@public_key = nil
+    @@private_key = nil
 
     def self.recaptcha_api_server
       'http://api.recaptcha.net'
