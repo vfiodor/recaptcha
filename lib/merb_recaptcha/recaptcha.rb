@@ -1,8 +1,8 @@
 # ReCAPTCHA
 module Ambethia
   module ReCaptcha
-    @@public_key = nil
-    @@private_key = nil
+    @@public_key = ENV['RECAPTCHA_PUBLIC_KEY']
+    @@private_key = ENV['RECAPTCHA_PRIVATE_KEY']
 
     def self.recaptcha_api_server
       'http://api.recaptcha.net'
