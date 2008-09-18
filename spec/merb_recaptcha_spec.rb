@@ -76,4 +76,30 @@ describe "verify_recaptcha" do
 
     verify_recaptcha(model, :failure_message => "Custom failure message")
   end
+
+  it "should allow to change failure message through class variable" do
+    Ambethia::ReCaptcha.private_key = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+    Ambethia::ReCaptcha.failure_message = 'Custom failure message'
+    ENV['RECAPTCHA_FAILURE_MESSAGE'] = 'Custom failure message'
+
+    recaptcha = mock('recaptcha')
+    recaptcha.stub!(:body).and_return("false\nerror")
+    Net::HTTP.stub!(:post_form).and_return(recaptcha)
+
+    request = mock('request')
+    request.stub!(:remote_ip)
+
+    stub!(:request).and_return(request)
+    stub!(:params).and_return({})
+    stub!(:session).and_return({})
+
+    model = mock('model')
+    error = mock('error')
+    model.stub!(:valid?)
+    model.stub!(:errors).and_return(error)
+
+    error.should_receive(:add_to_base).with("Custom failure message")
+
+    verify_recaptcha(model)
+  end
 end

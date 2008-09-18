@@ -3,6 +3,7 @@ module Ambethia
   module ReCaptcha
     @@public_key = ENV['RECAPTCHA_PUBLIC_KEY']
     @@private_key = ENV['RECAPTCHA_PRIVATE_KEY']
+    @@failure_message = ENV['RECAPTCHA_FAILURE_MESSAGE']
 
     def self.recaptcha_api_server
       'http://api.recaptcha.net'
@@ -30,6 +31,14 @@ module Ambethia
 
     def self.private_key
       @@private_key
+    end
+
+    def self.failure_message=(value)
+      @@failure_message = value
+    end
+
+    def self.failure_message
+      @@failure_message
     end
 
     module Helper 
@@ -75,8 +84,15 @@ module Ambethia
           answer, error = recaptcha.body.split.map {|i| i.chomp}
           unless answer == 'true'
             session[:recaptcha_error] = error
-            model.valid? if model
-            model.errors.add_to_base(options[:failure_message] || "Captcha response is incorrect, please try again.") if model
+            if model
+              model.valid?
+              error_message = options[:failure_message] || Ambethia::ReCaptcha.failure_message || "Captcha response is incorrect, please try again."
+              if model.class.superclass.name == 'Sequel::Model'
+                model.errors.add :recaptcha, error_message
+              else
+                model.errors.add_to_base error_message
+              end
+            end
             return false
           else
             session[:recaptcha_error] = nil

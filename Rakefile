@@ -7,7 +7,7 @@ require 'merb-core/tasks/merb_rake_helper'
 require "spec/rake/spectask"
 
 NAME = "merb_recaptcha"
-GEM_VERSION = "0.0.3"
+GEM_VERSION = "0.0.4"
 AUTHOR = "Fiodor Veresciaka"
 EMAIL = "fiodor.veresciaka@gmail.com"
 HOMEPAGE = "http://www.rubyonrails.lt/"
